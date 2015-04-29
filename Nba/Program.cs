@@ -10,7 +10,7 @@ namespace Nba
     {
         static void Main(string[] args)
         {
-            Console.Write("hell");
+            Console.Write("helloo");
 
         }
     }
