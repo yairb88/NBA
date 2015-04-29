@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Playoff>
+  <East>
+  <Team>
+    <Name>Atlanta Hawks</Name>
+    <Position>1</Position>
+  </Team>
+    <Team>
+      <Name>Cleveland Cavaliers</Name>
+      <Position>2</Position>
+    </Team>
+    <Team>
+      <Name>Chicago Bulls</Name>
+      <Position>3</Position>
+    </Team>
+    <Team>
+      <Name>Toronto Raptors</Name>
+      <Position>4</Position>
+    </Team>
+    <Team>
+      <Name>Washington Wizards</Name>
+      <Position>5</Position>
+    </Team>
+    <Team>
+      <Name>Milwaukee Bucks</Name>
+      <Position>6</Position>
+    </Team>
+    <Team>
+      <Name>Boston Celtics</Name>
+      <Position>7</Position>
+    </Team>
+    <Team>
+      <Name>Brooklyn Nets</Name>
+      <Position>8</Position>
+    </Team>
+  </East>
+  <West>
+    <Team>
+      <Name>Golden State Warriors</Name>
+      <Position>1</Position>
+    </Team>
+    <Team>
+      <Name>Houston Rockets</Name>
+      <Position>2</Position>
+    </Team>
+    <Team>
+      <Name>Los Angeles Clippers</Name>
+      <Position>3</Position>
+    </Team>
+    <Team>
+      <Name>Portland Trail Blazers</Name>
+      <Position>4</Position>
+    </Team>
+    <Team>
+      <Name>Memphis Grizzlies</Name>
+      <Position>5</Position>
+    </Team>
+    <Team>
+      <Name>San Antonio Spurs</Name>
+      <Position>6</Position>
+    </Team>
+    <Team>
+      <Name>Dallas Mavericks</Name>
+      <Position>7</Position>
+    </Team>
+    <Team>
+      <Name>New Orleans Pelicans</Name>
+      <Position>8</Position>
+    </Team>
+  </West>
+</Playoff>
