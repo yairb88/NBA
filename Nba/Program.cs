@@ -10,7 +10,7 @@ namespace Nba
     {
         static void Main(string[] args)
         {
-            Console.Write("This is a test");
+            Console.Write("This is ahhhbbb test");
 
         }
     }
