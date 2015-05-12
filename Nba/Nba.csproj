@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Game.cs" />
     <Compile Include="IGame.cs" />
+    <Compile Include="Log4NetInitializer.cs" />
     <Compile Include="PlayoffManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +57,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Log4NetConfiguration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Log4Net\log4net.dll" />
     <Content Include="Log4Net\log4net.xml" />
     <Content Include="Teams.xml">

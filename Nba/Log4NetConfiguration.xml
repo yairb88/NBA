@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<log4net>
+	<appender name="RollingFile" type="log4net.Appender.RollingFileAppender">
+		<file value="NBA.log" />
+        <appendToFile value="true" />
+        <maximumFileSize value="100KB" />
+        <maxSizeRollBackups value="2" />
+		<layout type="log4net.Layout.PatternLayout">
+            <!-- Print the date in ISO 8601 format -->
+            <conversionPattern value="%date [%thread] %-5level %logger %ndc - %message%newline" />
+        </layout>
+	</appender>
+		
+	<appender name="Console" type="log4net.Appender.ColoredConsoleAppender">
+       <mapping>
+				  <level value="WARN"/>
+				  <foreColor value="Yellow"/>
+			</mapping>
+			<mapping>
+			  	<level value="ERROR"/>
+			  	<foreColor value="Red"/>
+			</mapping>
+			<mapping>
+			  	<level value="FATAL"/>
+		  		<foreColor value="Blue"/>
+		  		
+			</mapping>
+    	<mapping>
+			  	<level value="INFO"/>
+		  		<foreColor value="White"/>
+			</mapping> 
+      
+      <layout type="log4net.Layout.PatternLayout">
+       
+            <!-- Pattern to output the caller's file name and line number -->
+            <conversionPattern value="%date [%thread] %-5level %logger - %message%newline" />
+        </layout>
+    </appender>
+	
+	<root>
+        <level value="DEBUG" />
+        <appender-ref ref="Console" />
+        <appender-ref ref="RollingFile" />
+    </root>
+	
+</log4net>
