@@ -50,12 +50,40 @@ namespace Nba
             }
         }
 
-        public Team Team1 { get { return m_team1; } }
-        public Team Team2 { get { return m_team2; } }
-        public int Team1Score { get { return m_team1Score; } }
-        public int Team2Score { get { return m_team2Score; } }
-        public Team WinnerTeam { get { return m_winnerTeam; } }
-
-
+        public Team Team1
+        {
+            get
+            {
+                return m_team1;
+            }
+        }
+        public Team Team2
+        {
+            get
+            {
+                return m_team2;
+            }
+        }
+        public int Team1Score
+        {
+            get
+            {
+                return m_team1Score;
+            }
+        }
+        public int Team2Score
+        {
+            get
+            {
+                return m_team2Score;
+            }
+        }
+        public Team WinnerTeam
+        {
+            get
+            {
+                return m_winnerTeam;
+            }
+        }
     }
 }
