@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using log4net;
 
 namespace Nba
 {
     class PlayoffManager
     {
-        enum Regiona { East, West };
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
+        enum Region { East, West };
         private static string TEAMS_XML_FILENAME = "Teams.xml";
         private static string EAST_TEAM_PATH = "//Playoff//East//Team";
         private static string WEST_TEAM_PATH = "//Playoff//West//Team";
@@ -29,6 +31,7 @@ namespace Nba
 
         public PlayoffManager()
         {
+            Log4NetInitializer.Init();
             initializeFromXml();
             firstRoundBuild();
         }
@@ -36,16 +39,19 @@ namespace Nba
         private void initializeFromXml()
         {
             xmlTeams = new XmlDocument();
+            log.InfoFormat("Load the xml file: @",TEAMS_XML_FILENAME);
             xmlTeams.Load(TEAMS_XML_FILENAME);
             eastTeams = xmlTeams.SelectNodes(EAST_TEAM_PATH);
             westTeams = xmlTeams.SelectNodes(WEST_TEAM_PATH);
 
+            log.InfoFormat("initialize team array");
             getTeamsNameAndPos(eastTeams, m_east);
             getTeamsNameAndPos(westTeams, m_west);
         }
 
         private void firstRoundBuild()
         {
+            log.InfoFormat("building the quarter finals");
             buildQuarter(m_east, m_eastQuarter);
             buildQuarter(m_west, m_westQuarter);
         }
@@ -67,7 +73,7 @@ namespace Nba
 
         private void buildQuarter(Team[] teams, Game[] games)
         {
-            //orginazing the games
+            log.InfoFormat("initialize the array of the quarter finals");
             games[0] = new Game(teams[0], teams[7]); // 1 place vs 8 place
             games[1] = new Game(teams[3], teams[4]); // 4 place vs 5 place
             games[2] = new Game(teams[1], teams[6]); // 2 place vs 7 place
@@ -76,27 +82,27 @@ namespace Nba
 
         private void buildSemiFinals(Game[] quarters, Game[] semiFinals)
         {
-            // gatinng the winners from games 1 vs 8 and 4 vs 5
+            log.InfoFormat("gatinng the winners from games 1 vs 8 and 4 vs 5");
             Team winner1 = quarters[0].WinnerTeam;
             Team winner2 = quarters[1].WinnerTeam;
             semiFinals[0] = new Game(winner1, winner2);
 
-            //// gatinng the winners from games 2 vs 7 and 3 vs 6
+            log.InfoFormat("gatinng the winners from games 2 vs 7 and 3 vs 6");
             winner1 = quarters[2].WinnerTeam;
             winner2 = quarters[3].WinnerTeam;
             semiFinals[1] = new Game(winner1, winner2);
         }
 
-        private void regionalfinalsBuilder(Game[] semiFinals, Regiona regiona)
+        private void regionalfinalsBuilder(Game[] semiFinals, Region regiona)
         {
-            //gatting the winners frome the reignal semi finals
+            log.InfoFormat("gatting the winners frome the reignal semi finals");
             Team winner1 = semiFinals[0].WinnerTeam;
             Team winner2 = semiFinals[1].WinnerTeam;
-            if (regiona == Regiona.East)
+            if (regiona == Region.East)
             {
                 m_eastFinals = new Game(winner1, winner2);
             }
-            else if (regiona == Regiona.West)
+            else if (regiona == Region.West)
             {
                 m_westFinals = new Game(winner1, winner2);
             }
@@ -104,10 +110,197 @@ namespace Nba
 
         private void nbaFinalsBuilder()
         {
-            //getting the east champion and west champion
+            log.InfoFormat("getting the east champion and west champion");
             Team winner1 = m_eastFinals.WinnerTeam;
             Team winner2 = m_westFinals.WinnerTeam;
+            log.InfoFormat("getting the the shoki nagar Nba champion for 2014/2015");
             m_nbaFinals = new Game(winner1, winner2);
+        }
+
+        public void ExportPalyoff()
+        {
+            string scoreString;
+            log.InfoFormat("Createing NBA XML");
+            XmlWriter xmlWriter = XmlWriter.Create("NBA.xml");
+            xmlWriter.WriteStartDocument();
+            xmlWriter.WriteStartElement("Playoff");
+
+            log.InfoFormat("Writing the East to the Xml");
+            xmlWriter.WriteStartElement("East");
+            xmlWriter.WriteStartElement("FirstRound");
+            for (int i = 0; i < m_eastQuarter.Length; i++)
+            {
+                log.InfoFormat("Writing the first round");
+                scoreString = m_eastQuarter[i].Team1Score.ToString();
+                xmlWriter.WriteStartElement("Game");
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_eastQuarter[i].Team1.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                scoreString = m_eastQuarter[i].Team2Score.ToString();
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_eastQuarter[i].Team2.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.WriteStartElement("Winner");
+                xmlWriter.WriteAttributeString("Name", m_eastQuarter[i].WinnerTeam.Name);
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("SemiFinals");
+            for (int i = 0; i < m_eastSemiFinal.Length; i++)
+            {
+                log.InfoFormat("Writing the semi Finals");
+                scoreString = m_eastSemiFinal[i].Team1Score.ToString();
+                xmlWriter.WriteStartElement("Game");
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_eastSemiFinal[i].Team1.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                scoreString = m_eastSemiFinal[i].Team2Score.ToString();
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_eastSemiFinal[i].Team2.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.WriteStartElement("Winner");
+                xmlWriter.WriteAttributeString("Name", m_eastSemiFinal[i].WinnerTeam.Name);
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
+
+            log.InfoFormat("Writing the Regional Finals");
+            xmlWriter.WriteStartElement("RegionalFinals");
+            scoreString = m_eastFinals.Team1Score.ToString();
+            xmlWriter.WriteStartElement("Game");
+            xmlWriter.WriteStartElement("Team");
+            xmlWriter.WriteAttributeString("Name", m_eastFinals.Team1.Name);
+            xmlWriter.WriteAttributeString("Score", scoreString);
+            xmlWriter.WriteEndElement();
+
+            scoreString = m_eastFinals.Team2Score.ToString();
+            xmlWriter.WriteStartElement("Team");
+            xmlWriter.WriteAttributeString("Name", m_eastFinals.Team2.Name);
+            xmlWriter.WriteAttributeString("Score", scoreString);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("Winner");
+            xmlWriter.WriteAttributeString("Name", m_eastFinals.WinnerTeam.Name);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+
+
+
+            log.InfoFormat("Writing the West to the Xml");
+            xmlWriter.WriteStartElement("West");
+            xmlWriter.WriteStartElement("FirstRound");
+            for (int i = 0; i < m_westQuarter.Length; i++)
+            {
+                log.InfoFormat("Writing the first round");
+                scoreString = m_westQuarter[i].Team1Score.ToString();
+                xmlWriter.WriteStartElement("Game");
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_westQuarter[i].Team1.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                scoreString = m_westQuarter[i].Team2Score.ToString();
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_westQuarter[i].Team2.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.WriteStartElement("Winner");
+                xmlWriter.WriteAttributeString("Name", m_westQuarter[i].WinnerTeam.Name);
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("SemiFinals");
+            for (int i = 0; i < m_westSemiFinal.Length; i++)
+            {
+                log.InfoFormat("Writing the Semi Finals");
+                scoreString = m_westSemiFinal[i].Team1Score.ToString();
+                xmlWriter.WriteStartElement("Game");
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_westSemiFinal[i].Team1.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                scoreString = m_westSemiFinal[i].Team2Score.ToString();
+                xmlWriter.WriteStartElement("Team");
+                xmlWriter.WriteAttributeString("Name", m_westSemiFinal[i].Team2.Name);
+                xmlWriter.WriteAttributeString("Score", scoreString);
+                xmlWriter.WriteEndElement();
+
+                xmlWriter.WriteStartElement("Winner");
+                xmlWriter.WriteAttributeString("Name", m_westSemiFinal[i].WinnerTeam.Name);
+                xmlWriter.WriteEndElement();
+                xmlWriter.WriteEndElement();
+            }
+            xmlWriter.WriteEndElement();
+
+            log.InfoFormat("Writing the Regional Finals");
+            xmlWriter.WriteStartElement("RegionalFinals");
+            scoreString = m_westFinals.Team1Score.ToString();
+            xmlWriter.WriteStartElement("Game");
+            xmlWriter.WriteStartElement("Team");
+            xmlWriter.WriteAttributeString("Name", m_westFinals.Team1.Name);
+            xmlWriter.WriteAttributeString("Score", scoreString);
+            xmlWriter.WriteEndElement();
+
+            scoreString = m_westFinals.Team2Score.ToString();
+            xmlWriter.WriteStartElement("Game");
+            xmlWriter.WriteStartElement("Team");
+            xmlWriter.WriteAttributeString("Name", m_westFinals.Team2.Name);
+            xmlWriter.WriteAttributeString("Score", scoreString);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("Winner");
+            xmlWriter.WriteAttributeString("Name", m_eastFinals.WinnerTeam.Name);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            log.InfoFormat("Writing the Nba Finals");
+            xmlWriter.WriteStartElement("NBAFinals");
+            scoreString = m_nbaFinals.Team1Score.ToString();
+            xmlWriter.WriteStartElement("Game");
+            xmlWriter.WriteStartElement("Team");
+            xmlWriter.WriteAttributeString("Name", m_nbaFinals.Team1.Name);
+            xmlWriter.WriteEndElement();
+
+            scoreString = m_nbaFinals.Team2Score.ToString();
+            xmlWriter.WriteStartElement("Team");
+            xmlWriter.WriteAttributeString("Name", m_nbaFinals.Team2.Name);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("Winner");
+            xmlWriter.WriteAttributeString("Name", m_nbaFinals.WinnerTeam.Name);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
+
+
+
+            xmlWriter.WriteEndElement();
+
+
+            xmlWriter.WriteEndDocument();
+            xmlWriter.Close();
         }
 
         public Team[] East { get { return m_east; } }

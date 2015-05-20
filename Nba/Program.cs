@@ -17,6 +17,7 @@ namespace Nba
         {
             Log4NetInitializer.Init();
             log.InfoFormat("Udi Kabudi Industries proud to present");
+
         }
     }
 }
