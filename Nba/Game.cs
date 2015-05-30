@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using log4net;
 
 namespace Nba
 {
     public class Game : IGame
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(Program));
         private static int FINAL_SCORE = 4;
         private Team m_team1;
         private Team m_team2;
@@ -23,19 +25,12 @@ namespace Nba
             m_team2Score = 0;
         }
 
-        private void addScoreTeam1()
+        public void SetScore(int score1, int score2)
         {
-            m_team1Score++;
+            m_team1Score = score1;
+            m_team2Score = score2;
+
             checkScore();
-
-        }
-
-        private void addScoreTeam2()
-        {
-
-            m_team2Score++;
-            checkScore();
-
         }
 
         private void checkScore()
@@ -43,10 +38,12 @@ namespace Nba
             if (m_team1Score == FINAL_SCORE)
             {
                 m_winnerTeam = m_team1;
+                log.InfoFormat("Winning Team is: {0}", m_winnerTeam.Name); 
             }
             else if (m_team2Score == FINAL_SCORE)
             {
                 m_winnerTeam = m_team2;
+                log.InfoFormat("Winning Team is: {0}", m_winnerTeam.Name);
             }
         }
 
