@@ -11,22 +11,21 @@ namespace Nba
     class PlayoffManager
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(Program));
-        enum Region { East, West };
-        enum PlayoffRuond { Quarter, SemiFinals, RegionalFinals, NbaFinals };
+        public enum Region { East, West };
+        public enum PlayoffRuond { Quarter, SemiFinals, RegionalFinals, NbaFinals };
         private static string TEAMS_XML_FILENAME = "Teams.xml";
         private static string EAST_TEAM_PATH = "//Playoff//East//Team";
         private static string WEST_TEAM_PATH = "//Playoff//West//Team";
         private XmlDocument xmlTeams;
         private XmlNodeList eastTeams;
         private XmlNodeList westTeams;
-        private XmlWriter xmlWriter;
 
-        private Team[] m_east = new Team[8];
-        private Team[] m_west = new Team[8];
-        private Game[] m_eastQuarter = new Game[4];
-        private Game[] m_westQuarter = new Game[4];
-        private Game[] m_eastSemiFinal = new Game[2];
-        private Game[] m_westSemiFinal = new Game[2];
+        private Team[] m_east;
+        private Team[] m_west;
+        private Game[] m_eastQuarter;
+        private Game[] m_westQuarter;
+        private Game[] m_eastSemiFinal;
+        private Game[] m_westSemiFinal;
         private Game m_eastFinals;
         private Game m_westFinals;
         private Game m_nbaFinals;
@@ -34,7 +33,12 @@ namespace Nba
 
         public PlayoffManager()
         {
-            //Log4NetInitializer.Init();
+            m_east = new Team[8];
+            m_west = new Team[8];
+            m_eastQuarter = new Game[4];
+            m_westQuarter = new Game[4];
+            m_eastSemiFinal = new Game[2];
+            m_westSemiFinal = new Game[2];
             initializeFromXml();
             firstRoundBuild();
         }
@@ -141,7 +145,7 @@ namespace Nba
         {
             if (0 > scoreTeam1 || scoreTeam1 > 4 || 0 > scoreTeam2 || scoreTeam2 > 4)
             {
-                log.ErrorFormat("The score must be less then 4 but biger then 0, score1: {0} score2 : {1}", score1, score2);
+                log.ErrorFormat("The score must be less then 4 but biger then 0, score1: {0} score2 : {1}", scoreTeam1  , scoreTeam2);
                 return;
             }
             else if (scoreTeam1 == 4 && scoreTeam2 == 4)
@@ -194,9 +198,9 @@ namespace Nba
 
         private void setGame(Game game, int score1, int score2)
         {
-            log.InfoFormat("Seting Score for Game score team1: {0}  score team2: {1}", score1, score2);
+            log.InfoFormat("Setting Score for Game score team1: {0}  score team2: {1}", score1, score2);
             game.SetScore(score1, score2);
-            log.InfoFormat("The game after seting: {0}: {1} vs {2}: {3}", game.Team1.Name, game.Team1Score, game.Team2.Name, game.Team2Score);
+            log.InfoFormat("The game after setting: {0}: {1} vs {2}: {3}", game.Team1.Name, game.Team1Score, game.Team2.Name, game.Team2Score);
         }
 
         private void checkForChampions()
