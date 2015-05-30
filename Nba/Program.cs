@@ -24,7 +24,6 @@ namespace Nba
         {
             Log4NetInitializer.Init();
             log.InfoFormat("Udi Kabudi Industries proud to present");
-            //System.Windows.Application app = new Application();
             Application app = new Application();
             app.Run(new MainWindow());
         }
